@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/768bit/verman"
-	"gopkg.in/urfave/cli.v1"
+  "github.com/768bit/verman/cli/git"
+  "gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
 	"strings"
@@ -70,6 +71,8 @@ func main() {
 	app.Commands = []cli.Command{
 		NewVersionCommand,
 		GetVersionCommand,
+		git.GitCommand,
+
 	}
 
 	err := app.Run(os.Args)

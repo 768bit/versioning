@@ -174,6 +174,14 @@ func (vd *VersionData) TagGitCommit(message string) (error) {
 
 }
 
+func (vd *VersionData) PerformGitCommit(message string) (error) {
+
+	_, err := vutils.Exec.ExecCommandShowStdErrReturnOutput("git", "commit", "-a", "-m", message)
+
+	return err
+
+}
+
 func (vd *VersionData) ToJSON() (string, error) {
 
 	bContent, err := json.Marshal(vd)
