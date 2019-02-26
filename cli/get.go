@@ -3,7 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/768bit/verman"
+	"github.com/768bit/vpkg"
+	"github.com/768bit/vpkg/cli/support"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -42,6 +43,8 @@ var GetVersionCommand = cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 
+		VDATA := support.GetVersionData()
+
 		if c.Bool("json") {
 
 			//output the json now...
@@ -64,7 +67,7 @@ var GetVersionCommand = cli.Command{
 
 		} else if os := c.String("os"); os != "" {
 
-			allowed, os := verman.CheckAllowedOs(os)
+			allowed, os := vpkg.CheckAllowedOs(os)
 
 			if !allowed {
 
@@ -74,7 +77,7 @@ var GetVersionCommand = cli.Command{
 
 				return err
 
-			} else if pkgVerAllowed, pkgVer := verman.PkgOsVersionString(os, VDATA); !pkgVerAllowed {
+			} else if pkgVerAllowed, pkgVer := vpkg.PkgOsVersionString(os, VDATA); !pkgVerAllowed {
 
 				return errors.New(fmt.Sprintf("Unable to obtain package version for os %s", os))
 

@@ -4,8 +4,8 @@ package main
 
 import (
   "fmt"
-  "github.com/768bit/verman"
-  "github.com/768bit/verman/pkgutils"
+  "github.com/768bit/vpkg/pkgutils"
+  "github.com/768bit/vpkg/xgoutils"
   "github.com/768bit/vutils"
   "github.com/768bit/isokit"
   "github.com/bmatcuk/doublestar"
@@ -15,15 +15,17 @@ import (
   "path/filepath"
 )
 
-var VDATA *verman.VersionData
+var VDATA *vpkg.VersionData
 
 func InitialiseVersionData() error {
 
-	vd, err := verman.LoadVersionData()
+  cwd, _ := os.Getwd()
+
+	vd, err := vpkg.LoadVersionData(cwd)
 	if err != nil {
 		fmt.Println(err)
-		vd = verman.NewVersionData()
-		err = vd.Save()
+		vd = vpkg.NewVersionData()
+		err = vd.Save(cwd)
 		if err != nil {
 			return err
 		}
@@ -47,7 +49,7 @@ func Build() error {
 
 	mg.Deps(InitialiseVersionData, PackAssets)
 	VDATA.NewBuild()
-	VDATA.Save()
+	VDATA.Save(cwd)
   InitialiseVersionData()
   vermanCliFolder := filepath.Join(cwd, "cli")
 	vermanBinary := filepath.Join(cwd, "build", "verman")
@@ -86,11 +88,11 @@ func BuildDeb() error {
   cwd, _ := os.Getwd()
 
   VDATA.NewPkgRevision("ubuntu")
-  VDATA.Save()
+  VDATA.Save(cwd)
   InitialiseVersionData()
 
   debPkgRoot := filepath.Join(cwd, "build", "pkg")
-  allowed, vermanPackageName := verman.PkgOsVersionString("ubuntu", VDATA)
+  allowed, vermanPackageName := vpkg.PkgOsVersionString("ubuntu", VDATA)
   if !allowed {
     return errors.New("unable to make version")
   }
@@ -150,5 +152,53 @@ func BuildTemplates() error {
   fmt.Println(ts)
 
   return ts.PersistTemplateBundleToDisk(templateBundleOutPath)
+
+}
+
+var XGOBuildSettings = xgoutils.XGOCompileSettings{
+  Android:xgoutils.NewAndroidCompileSettings(xgoutils.ARCH_ALL),
+  Darwin: xgoutils.NewDarwinCompileSettings(xgoutils.ARCH_ALL),
+  IOS:xgoutils.NewIosCompileSettings(xgoutils.ARCH_ALL),
+  Linux:xgoutils.NewLinuxCompileSettings(xgoutils.ARCH_ALL).
+    AddPackagingOptions(xgoutils.NewLinuxPackagingOptions().AddDebian(xgoutils.NewDebianLinuxPackagingOptions("/usr/bin", nil))),
+  Windows:xgoutils.NewWindowsCompileSettings(xgoutils.ARCH_ALL),
+}
+
+func BuildXGO() error {
+
+  return doXGOBuild(true)
+
+}
+
+func doXGOBuild(isRelease bool) error {
+
+  mg.Deps(InitialiseVersionData, PackAssets)
+
+  VDATA.NewBuild()
+  VDATA.Save()
+  cwd, _ := os.Getwd()
+
+  releaseVer := "verman"
+  vcliOut := "build"
+
+  if !isRelease {
+    releaseVer += "-dev"
+  } else {
+    releaseVer += "-" + VDATA.FullVersionString()
+  }
+
+  fmt.Println("Creating Cross Platform Build: " + releaseVer)
+
+  fmt.Println("Building Verman using XGO for cross compilation...")
+  ldflags := fmt.Sprintf(LD_FLAGS_FMT_STR, VDATA.FullVersionString(), VDATA.ShortID, VDATA.DateString, VDATA.UUID, VDATA.GitCommit)
+  fmt.Printf("Building with LDFLAGS: %s\n", ldflags)
+  cmd := vutils.Exec.CreateAsyncCommand("xgo", false, "-out", releaseVer, "--targets=darwin/amd64,linux/*,windows/*", "-v", "-ldflags", ldflags, "-dest", vcliOut+"/", ".")
+  err = cmd.BindToStdoutAndStdErr().SetWorkingDir(cwd).CopyEnv().StartAndWait()
+  if err != nil {
+    fmt.Println(err)
+    return err
+  }
+
+  return nil
 
 }

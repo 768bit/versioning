@@ -3,7 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/768bit/verman"
+	"github.com/768bit/vpkg"
+	"github.com/768bit/vpkg/cli/support"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -25,8 +26,9 @@ var NewMajorVersionCommand = cli.Command{
 	Name:  "major",
 	Usage: "Make a new Major version",
 	Action: func(c *cli.Context) error {
+		VDATA := support.GetVersionData()
 		VDATA.NewMajorVersion()
-		return VDATA.Save()
+		return VDATA.Save(ROOT)
 	},
 }
 
@@ -34,8 +36,9 @@ var NewMinorVersionCommand = cli.Command{
 	Name:  "minor",
 	Usage: "Make a new Minor version",
 	Action: func(c *cli.Context) error {
+		VDATA := support.GetVersionData()
 		VDATA.NewMinorVersion()
-		return VDATA.Save()
+		return VDATA.Save(ROOT)
 	},
 }
 
@@ -43,8 +46,9 @@ var NewRevisionVersionCommand = cli.Command{
 	Name:  "revision",
 	Usage: "Make a new Revision",
 	Action: func(c *cli.Context) error {
+		VDATA := support.GetVersionData()
 		VDATA.NewRevision()
-		return VDATA.Save()
+		return VDATA.Save(ROOT)
 	},
 }
 
@@ -52,8 +56,9 @@ var NewBuildVersionCommand = cli.Command{
 	Name:  "build",
 	Usage: "Make a new Build",
 	Action: func(c *cli.Context) error {
+		VDATA := support.GetVersionData()
 		VDATA.NewBuild()
-		return VDATA.Save()
+		return VDATA.Save(ROOT)
 	},
 }
 
@@ -67,10 +72,11 @@ var NewOSPackageVersionCommand = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
+		VDATA := support.GetVersionData()
 
 		os := c.String("os")
 
-		allowed, os := verman.CheckAllowedOs(os)
+		allowed, os := vpkg.CheckAllowedOs(os)
 
 		if !allowed || os == "" {
 
@@ -81,6 +87,6 @@ var NewOSPackageVersionCommand = cli.Command{
 			VDATA.NewPkgRevision(os)
 
 		}
-		return VDATA.Save()
+		return VDATA.Save(ROOT)
 	},
 }

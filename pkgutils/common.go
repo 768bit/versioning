@@ -6,6 +6,40 @@ import (
 	"path/filepath"
 )
 
+type PackageMetadata struct {
+	Name        string
+	Maintainer  string
+	Description string
+	parent      *PackageMetadata
+}
+
+func (pmeta *PackageMetadata) MakePackageDetails(version string, architecture string) *PackageDetails {
+	return &PackageDetails{
+		Name:         pmeta.Name,
+		Version:      version,
+		Maintainer:   pmeta.Maintainer,
+		Architecture: architecture,
+		Description:  pmeta.Description,
+	}
+}
+
+func (pmeta *PackageMetadata) MakeChild(name string) *PackageMetadata {
+	return &PackageMetadata{
+		Name:        name,
+		Maintainer:  pmeta.Maintainer,
+		Description: pmeta.Description,
+		parent:      pmeta,
+	}
+}
+
+func (pmeta *PackageMetadata) IsChild() bool {
+	return pmeta.parent != nil
+}
+
+func (pmeta *PackageMetadata) GetParent() *PackageMetadata {
+	return pmeta.parent
+}
+
 type PackageDetails struct {
 	Name         string
 	Version      string
