@@ -4,8 +4,8 @@ package main
 
 import (
   "fmt"
-  "github.com/768bit/vpkg/pkgutils"
-  "github.com/768bit/vpkg/xgoutils"
+  "gitlab.768bit.com/pub/vpkg/pkgutils"
+  "gitlab.768bit.com/pub/vpkg/xgoutils"
   "github.com/768bit/vutils"
   "github.com/768bit/isokit"
   "github.com/bmatcuk/doublestar"

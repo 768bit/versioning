@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/768bit/vpkg"
-	"github.com/768bit/vpkg/cli/support"
+	"gitlab.768bit.com/pub/vpkg"
+	"gitlab.768bit.com/pub/vpkg/cli/support"
 	"gopkg.in/urfave/cli.v1"
 )
 
