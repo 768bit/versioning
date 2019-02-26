@@ -1,117 +1,15 @@
 image: registry.gitlab.768bit.com/vann/docker-images/vann-build-base-xgo:latest
 
 variables:
-  REPO_NAME: gitlab.768bit.com/github/verman
+  REPO_NAME: gitlab.768bit.com/github/vpkg
 
 stages:
   - build
   - publish
   - clean
 
-before_script:
-  - mkdir -p $CI_PROJECT_DIR/build/vcli
-  - mkdir -p $CI_PROJECT_DIR/bin
-
-build release:
+build docker-vpkg-reg:
   stage: build
-  only:
-  - tags
-  tags:
-  - xgo-docker-build
-  before_script:
-  - source $CI_PROJECT_DIR/scripts/clone_repos.sh
-  - source $CI_PROJECT_DIR/scripts/utils.sh
-  - BRANCH="$(IsCommitInBranch "$CI_COMMIT_SHA" "master")"
-  - 'echo "IDENTIFIED BRANCH: $BRANCH"'
-  - if [ ! "$BRANCH" ]; then exit 0; fi;
-  - PrepareXGO
-  - CloneVannRepos "github/verman" "$CI_JOB_TOKEN"
-  - mkdir -p $GOPATH/src/$REPO_NAME
-  - echo "MOVING $CI_PROJECT_DIR/* -> $GOPATH/src/$REPO_NAME/"
-  - mv $CI_PROJECT_DIR/* $GOPATH/src/$REPO_NAME/
-  - cp -rf $CI_PROJECT_DIR/.git $GOPATH/src/$REPO_NAME/
-  - cd $GOPATH/src/$REPO_NAME
-  - echo "ENTERED -> `pwd`"
-  script:
-  - mkdir -p $CI_PROJECT_DIR/build/vcli
-  - cd $GOPATH/src/$REPO_NAME
-  - NODE_PATH=/usr/lib/node_modules mage buildxgo
-  - cd $GOPATH/src/$REPO_NAME
-  - echo "Copying Artifacts `pwd`/build/* -> /cache/vcli-$CI_COMMIT_TAG"
-  - ls -la $GOPATH/src/$REPO_NAME/build/
-  - mkdir -p "/cache/vcli-$CI_COMMIT_TAG"
-  - mkdir -p "/cache/vcli-$CI_COMMIT_TAG/build"
-  - mkdir -p "/cache/vcli-$CI_COMMIT_TAG/bin"
-  - cp $GOPATH/src/$REPO_NAME/build/* /cache/vcli-$CI_COMMIT_TAG/build/
-  - echo "Copying Binary `pwd`/build/vcli-${CI_COMMIT_TAG#?}-linux-amd64 -> /cache/vcli-$CI_COMMIT_TAG/bin/vcli"
-  - cp $GOPATH/src/$REPO_NAME/build/vcli-${CI_COMMIT_TAG#?}-linux-amd64 /cache/vcli-$CI_COMMIT_TAG/bin/vcli
-
-build:
-  stage: build
-  only:
-  - master
-  tags:
-  - xgo-docker-build
-  before_script:
-  - source $CI_PROJECT_DIR/gitlabci/clone_repos.sh
-  - source $CI_PROJECT_DIR/gitlabci/utils.sh
-  - QuitTagged "$CI_BUILD_REF"
-  - PrepareXGO
-  - CloneVannRepos "vcli" "$CI_JOB_TOKEN"
-  - mkdir -p $GOPATH/src/$REPO_NAME
-  - echo "MOVING $CI_PROJECT_DIR/vcli/* -> $GOPATH/src/$REPO_NAME/"
-  - cp $CI_PROJECT_DIR/* $GOPATH/src/$REPO_NAME/
-  - cp -rf $CI_PROJECT_DIR/.git $GOPATH/src/$REPO_NAME/
-  - cd $GOPATH/src/gitlab.768bit.com/vann/vbuilder
-  - npm install
-  - cd $GOPATH/src/gitlab.768bit.com/vann/vapphost/jslib
-  - npm install
-  - cd $GOPATH/src/gitlab.768bit.com/vann/vappdev/jslib
-  - npm install
-  - cd $GOPATH/src/$REPO_NAME
-  - echo "ENTERED -> `pwd`"
-  - cd leaser
-  - npm install
-  - cd $GOPATH/src/$REPO_NAME
-  - echo "ENTERED -> `pwd`"
-  script:
-  - cd $GOPATH/src/$REPO_NAME
-  - NODE_PATH=/usr/lib/node_modules mage buildxgodev
-  - cd $GOPATH/src/$REPO_NAME
-  - echo "Copying Artifacts `pwd`/build/* -> $CI_PROJECT_DIR/build/"
-  - mkdir -p $CI_PROJECT_DIR/build
-  - cp -rf $GOPATH/src/$REPO_NAME/build/vcli-dev-linux-amd64 $CI_PROJECT_DIR/build/vcli
-  artifacts:
-    expire_in: '1 week'
-    paths:
-    - build/vcli
-
-
-publish binaries:
-  stage: publish
-  image: python:3-alpine
-  only:
-  - tags
-  script:
-  - pip3 install gitlab_release
-  - cd $CI_PROJECT_DIR
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-source.zip  --description "$(printf "# VCLI %s\nNew vcli release %s.\n\n## Downloads:\n\n### SOURCE:\n" "${CI_COMMIT_TAG}" "${CI_COMMIT_TAG}")" "$GITLAB_ACCESS_TOKEN" .
-  - cd /cache/vcli-$CI_COMMIT_TAG/build
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-linux-386.zip      --description $'\n\n### LINUX:\n\nLinux Intel/AMD 32bit:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-linux-386
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-linux-amd64.zip    --description $'\nLinux Intel/AMD 64bit:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-linux-amd64
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-linux-arm64.zip    --description $'\nLinux ARM 64bit:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-linux-arm64
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-linux-arm-5.zip    --description $'\nLinux ARM 5 32bit:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-linux-arm-5
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-linux-arm-6.zip    --description $'\nLinux ARM 6 32bit:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-linux-arm-6
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-linux-mips64.zip   --description $'\nLinux MIPS 64bit:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-linux-mips64
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-linux-mips.zip     --description $'\nLinux MIPS 32bit:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-linux-mips
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-linux-mips64le.zip --description $'\nLinux MIPS 64bit Little Endian:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-linux-mips64le
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-linux-mipsle.zip   --description $'\nLinux MIPS 32bit Little Endian:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-linux-mipsle
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-windows-386.zip    --description $'\n\n### WINDOWS:\n\nWindows 32bit:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-windows-4.0-386.exe
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-windows-amd64.zip  --description $'\nWindows 64bit:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-windows-4.0-amd64.exe
-  - python3 -m gitlab_release --server http://172.16.80.86 --zip vcli-${CI_COMMIT_TAG#?}-macOS-64bit.zip    --description $'\n\n### APPLE macOS / OS X:\n\nApple macOS 64bit Darwin:' "$GITLAB_ACCESS_TOKEN" vcli-${CI_COMMIT_TAG#?}-darwin-10.6-amd64
-
-publish docker:
-  stage: publish
   tags:
   - xgo-docker-build
   only:
@@ -121,8 +19,7 @@ publish docker:
   - docker info
   script:
   - cp -rfv /cache/vcli-$CI_COMMIT_TAG/bin ./bin
-  - docker build -t registry.gitlab.768bit.com/vann/vcli/vann-cli -f dockerenv/Dockerfile .
-  - docker push registry.gitlab.768bit.com/vann/vcli/vann-cli
+  - $CI_PROJECT_DIR/scripts/build-docker-images-reg.sh
 
 
 clean release:
