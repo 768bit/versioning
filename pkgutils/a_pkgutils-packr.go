@@ -2,7 +2,7 @@
 
 package pkgutils
 
-import "github.com/768bit/packr"
+import "github.com/gobuffalo/packr"
 
 // You can use the "packr clean" command to clean up this,
 // and any other packr generated files.

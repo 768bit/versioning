@@ -1,5 +1,5 @@
 package pkgutils
 
-import "github.com/768bit/packr"
+import "github.com/gobuffalo/packr"
 
 var AssetsBox = packr.NewBox("../assets")

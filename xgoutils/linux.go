@@ -2,8 +2,8 @@ package xgoutils
 
 import (
 	"fmt"
-	"github.com/768bit/vpkg/common"
-	"github.com/768bit/vpkg/pkgutils"
+	"gitlab.768bit.com/pub/vpkg/common"
+	"gitlab.768bit.com/pub/vpkg/pkgutils"
 	"github.com/768bit/vutils"
 	"log"
 	"os"
