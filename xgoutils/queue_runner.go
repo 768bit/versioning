@@ -3,14 +3,13 @@ package xgoutils
 import (
 	"errors"
 	"fmt"
-	"gitlab.768bit.com/pub/vpkg/common"
-	"gitlab.768bit.com/pub/vpkg/pkgutils"
-	"github.com/768bit/vutils"
-	"github.com/bmatcuk/doublestar"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/768bit/vutils"
+	"github.com/bmatcuk/doublestar"
 )
 
 func (cs *XGOCompileSettings) resetRunning() {

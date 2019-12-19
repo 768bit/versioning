@@ -2,16 +2,16 @@ package xgoutils
 
 import (
 	"fmt"
-	"gitlab.768bit.com/pub/vpkg/common"
-	"gitlab.768bit.com/pub/vpkg/pkgutils"
-	"github.com/768bit/vutils"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
 	"strconv"
+
+	"github.com/768bit/vpkg/common"
+	"github.com/768bit/vpkg/pkgutils"
+	"github.com/768bit/vutils"
 )
 
 var LINUX_ALLOWED_ARCHITECTURES = []XGOArchitecture{ARCH_386, ARCH_AMD64, ARCH_ARM_5, ARCH_ARM_6, ARCH_ARM_7, ARCH_ARM64, ARCH_MIPS, ARCH_MIPS64, ARCH_MIPS_LE, ARCH_MIPS64_LE}

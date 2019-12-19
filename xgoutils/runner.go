@@ -3,14 +3,15 @@ package xgoutils
 import (
 	"errors"
 	"fmt"
-	"gitlab.768bit.com/pub/vpkg/common"
-	"gitlab.768bit.com/pub/vpkg/pkgutils"
-	"github.com/768bit/vutils"
-	"github.com/bmatcuk/doublestar"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"github.com/768bit/vpkg/common"
+	"github.com/768bit/vpkg/pkgutils"
+	"github.com/768bit/vutils"
+	"github.com/bmatcuk/doublestar"
 )
 
 var QueueModeDisablesDirectBuildsError = errors.New("Cannot perform a direct build if aqueue mode has been enabled.")
