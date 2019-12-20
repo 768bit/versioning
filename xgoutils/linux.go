@@ -75,7 +75,7 @@ func (debpkg *DebianLinuxPackagingOptions) runBuild(arch XGOArchitecture) (strin
 
 	pkgutils.Debian.CleanPreviousPackages(debpkg.platformCompileSettings.compileSettings.packageMetadata.Name, buildOutputRoot, arch)
 
-	err := pkgutils.Debian.BuildDebianPackage(debpkg.pkgBuildRoot, arch, buildOutputFullPath)
+	err = pkgutils.Debian.BuildDebianPackage(debpkg.pkgBuildRoot, arch, buildOutputFullPath)
 	return buildOutputFullPath, err
 
 }

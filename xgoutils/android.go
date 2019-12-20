@@ -1,6 +1,6 @@
 package xgoutils
 
-var ANDROID_ALLOWED_ARCHITECTURES = []XGOArchitecture{ARCH_ARM_7, ARCH_ARM6, ARCH_ARM64}
+var ANDROID_ALLOWED_ARCHITECTURES = []XGOArchitecture{ARCH_ARM_7, ARCH_ARM_6, ARCH_ARM64}
 
 type XGOAndroidCompileSettings struct {
 	BaseXGOPlatformCompileSettings

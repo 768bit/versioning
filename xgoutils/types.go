@@ -172,8 +172,8 @@ type XGOCompileResult struct {
 	Packages      PackageBuildMap
 }
 
-type PackageBuildMap = map[XGOArchitecture]map[PackageType]string
-type PlatformPackageBuildMap = map[XGOPlatform]PackageBuildMap
+type PackageBuildMap map[XGOArchitecture]map[PackageType]string
+type PlatformPackageBuildMap map[XGOPlatform]PackageBuildMap
 
 func (base *BaseXGOPlatformCompileSettings) BuildPackages(packageMeta *pkgutils.PackageMetadata, vdata *common.VersionData, pkgBuildRoot string, binaryTargets BinaryTargetsArchitectureMap) (PackageBuildMap, error) {
 

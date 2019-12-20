@@ -16,7 +16,7 @@ func (cs *XGOCompileSettings) resetRunning() {
 	cs.isRunning = false
 }
 
-func (cs *XGOCompileSettings) BuildQueue() (map[string][]XGOCompileResult, error) {
+func (cs *XGOCompileSettings) BuildQueue() ([]XGOCompileResult, error) {
 
 	if cs.isRunning {
 		if cs.isQueue {

@@ -188,7 +188,7 @@ func (cs *XGOCompileSettings) BuildPlatforms(pkgMeta *pkgutils.PackageMetadata, 
 				pkgBuildPath := filepath.Join(platformBuildPath, "pkg")
 				if ipkg, err := cs.getPackagingInterface(platformItem); err != nil {
 					return nil, err
-				} else if pkgRes, err := ipkg.BuildPackages(pkgMeta, vdata, pkgBuildPath); err != nil {
+				} else if pkgRes, err := ipkg.BuildPackages(pkgMeta, vdata, pkgBuildPath, cleanBinTargets); err != nil {
 					if err == NoPackagesToBuildError {
 						log.Println("No packages to build for platform", platformItem)
 					} else {
@@ -262,7 +262,7 @@ var BinaryArchitectureNameInvalidError = errors.New("Thearchitecture used for th
 
 func getPlatformAndArchForBinary(binaryPath string) (XGOPlatform, XGOArchitecture, error) {
 
-	dir, file := filepath.Split(binaryPath)
+	_, file := filepath.Split(binaryPath)
 
 	if !BinaryRX.MatchString(file) {
 		return "", "", BinaryNameInvalidError

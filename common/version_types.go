@@ -207,7 +207,7 @@ func (vd *VersionData) GetGitCommit() (string, error) {
 
 	cwd, _ := os.Getwd()
 
-	gitCommitCmd := vutils.Exec.CreateAsyncCommand("git", false, "rev-parse", "--short", "HEAD").CopyEnv().CaptureStdoutAndStdErr()
+	gitCommitCmd := vutils.Exec.CreateAsyncCommand("git", false, "rev-parse", "--short", "HEAD").CopyEnv().CaptureStdoutAndStdErr(true, false)
 
 	if vd.TargetFolder != "" && vd.Name != "" {
 		gitCommitCmd = gitCommitCmd.SetWorkingDir(filepath.Join(cwd, vd.TargetFolder))
