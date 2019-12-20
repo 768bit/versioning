@@ -75,7 +75,7 @@ func PackAssets() error {
 	mg.Deps(BuildTemplates)
 	fmt.Println("Packing Assets...")
 
-	pkrBuildCmd := vutils.Exec.CreateAsyncCommand("packr", false, "-z")
+	pkrBuildCmd := vutils.Exec.CreateAsyncCommand("packr2", false, "-z")
 	err := pkrBuildCmd.BindToStdoutAndStdErr().SetWorkingDir(filepath.Join(cwd, "pkgutils")).StartAndWait()
 	if err != nil {
 		fmt.Println(err)
