@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gitlab.768bit.com/pub/vpkg/cli/support"
+	"github.com/768bit/vpkg/cli/support"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 )

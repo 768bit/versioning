@@ -3,8 +3,8 @@ package xgoutils
 import (
 	"errors"
 	"fmt"
-	"gitlab.768bit.com/pub/vpkg/common"
-	"gitlab.768bit.com/pub/vpkg/pkgutils"
+	"github.com/768bit/vpkg/common"
+	"github.com/768bit/vpkg/pkgutils"
 	"strings"
 )
 

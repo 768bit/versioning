@@ -2,7 +2,7 @@ package support
 
 import (
 	"fmt"
-	"gitlab.768bit.com/pub/vpkg"
+	"github.com/768bit/vpkg"
 )
 
 var VDATA *vpkg.VersionData

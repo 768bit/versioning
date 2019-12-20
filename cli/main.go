@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"gitlab.768bit.com/pub/vpkg/cli/git"
-	"gitlab.768bit.com/pub/vpkg/cli/support"
+	"github.com/768bit/vpkg/cli/git"
+	"github.com/768bit/vpkg/cli/support"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
